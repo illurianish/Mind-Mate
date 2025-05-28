@@ -2,12 +2,20 @@ services:
   - type: web
     name: mindmate-backend
     env: python
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && gunicorn app:app
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && gunicorn app:app --bind 0.0.0.0:$PORT --workers 1
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: OPENAI_API_KEY
         sync: false
       - key: FLASK_ENV
-        value: production 
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SQLALCHEMY_DATABASE_URI
+        sync: false
+      - key: PORT
+        value: 10000
+    healthCheckPath: /health
+    autoDeploy: true 
