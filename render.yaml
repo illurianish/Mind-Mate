@@ -3,7 +3,7 @@ services:
     name: mindmate-backend
     env: python
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && gunicorn app:app --bind 0.0.0.0:$PORT --workers 1
+    startCommand: PYTHONPATH=$PYTHONPATH:backend gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT --workers 1
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -17,5 +17,7 @@ services:
         sync: false
       - key: PORT
         value: 10000
+      - key: PYTHONPATH
+        value: /opt/render/project/src/backend
     healthCheckPath: /health
     autoDeploy: true 

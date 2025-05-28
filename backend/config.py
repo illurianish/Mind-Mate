@@ -17,15 +17,18 @@ class Config:
         'http://localhost:3000',
         'http://localhost:3001',
         'http://localhost:3002',
-        'https://illurianish.github.io'
+        'https://illurianish.github.io',
+        'https://mindmate-backend-f35c.onrender.com'
     ]
     CORS_SUPPORTS_CREDENTIALS = True
+    CORS_ALLOW_HEADERS = ['Content-Type', 'Authorization']
+    CORS_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
     
     # OpenAI
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'sk-default-key-replace-me')
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     
-    if not OPENAI_API_KEY or OPENAI_API_KEY == 'sk-default-key-replace-me':
-        print("WARNING: OpenAI API key not configured. Please set OPENAI_API_KEY in your .env file.")
+    if not OPENAI_API_KEY:
+        print("WARNING: OpenAI API key not configured. Please set OPENAI_API_KEY in your environment variables.")
     
     # Google OAuth
     GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
@@ -44,5 +47,5 @@ class Config:
     CRISIS_HOTLINE = os.getenv('CRISIS_HOTLINE', '1-800-273-8255')
     
     # JWT
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'your-jwt-secret-key-here')
-    JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', os.getenv('SECRET_KEY', 'your-jwt-secret-key-here'))
+    JWT_ACCESS_TOKEN_EXPIRES = int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 3600))  # 1 hour by default

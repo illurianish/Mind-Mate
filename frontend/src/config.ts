@@ -1,7 +1,15 @@
 const config = {
-  apiUrl: process.env.NODE_ENV === 'production'
-    ? 'https://mindmate-backend-f35c.onrender.com'  // Production Render.com URL
-    : 'http://localhost:5002'  // Development backend URL
+  apiUrl: process.env.REACT_APP_API_URL || 
+    (process.env.NODE_ENV === 'production'
+      ? 'https://mindmate-backend-f35c.onrender.com'
+      : 'http://localhost:5002'),
+  
+  // Add timeout for API calls
+  apiTimeout: 30000, // 30 seconds
+  
+  // Add retry configuration
+  maxRetries: 3,
+  retryDelay: 1000, // 1 second
 };
 
 export default config;
