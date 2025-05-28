@@ -1,4 +1,11 @@
-export const API_URL = 'http://localhost:5002';
+const config = {
+  apiUrl: process.env.NODE_ENV === 'production'
+    ? 'https://mindmate-backend-f35c.onrender.com'  // Production Render.com URL
+    : 'http://localhost:5002'  // Development backend URL
+};
+
+export default config;
+
 export const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
 
 // Mood tracking constants

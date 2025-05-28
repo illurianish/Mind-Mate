@@ -10,7 +10,6 @@ import {
   useTheme,
   Avatar,
   Tooltip,
-  Fade,
 } from '@mui/material';
 import {
   Send as SendIcon,
@@ -20,6 +19,7 @@ import {
   Person as PersonIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import config from '../config';
 
 /**
  * Message interface defining the structure of chat messages
@@ -186,7 +186,7 @@ const Chat: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5002/chat', {
+      const response = await axios.post(`${config.apiUrl}/chat`, {
         message: inputMessage
       });
 

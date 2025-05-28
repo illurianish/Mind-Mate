@@ -14,7 +14,9 @@ MindMate is an AI-powered mental health chatbot designed to provide emotional su
 
 ## 🚀 Live Demo
 
-Visit [mindmate.yourdomain.com](https://mindmate.yourdomain.com) to try out MindMate!
+Visit [https://illurianish.github.io/Mind-Mate](https://illurianish.github.io/Mind-Mate) to try out MindMate!
+
+Backend API: [https://mindmate-backend-f35c.onrender.com](https://mindmate-backend-f35c.onrender.com)
 
 ## 🛠️ Tech Stack
 
@@ -22,11 +24,13 @@ Visit [mindmate.yourdomain.com](https://mindmate.yourdomain.com) to try out Mind
   - React with TypeScript
   - Material-UI (MUI)
   - Axios for API calls
+  - GitHub Pages for hosting
 
 - **Backend:**
   - Flask (Python)
   - OpenAI API
   - SQLite Database
+  - Render.com for hosting
 
 ## 📋 Prerequisites
 
@@ -38,8 +42,8 @@ Visit [mindmate.yourdomain.com](https://mindmate.yourdomain.com) to try out Mind
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/mental-health-bot.git
-   cd mental-health-bot
+   git clone https://github.com/illurianish/Mind-Mate.git
+   cd Mind-Mate
    ```
 
 2. **Set up the backend**
@@ -74,43 +78,13 @@ Visit [mindmate.yourdomain.com](https://mindmate.yourdomain.com) to try out Mind
 
 ## 🚀 Deployment
 
-### Frontend Deployment (GitHub Pages)
+### Frontend (GitHub Pages)
+The frontend is automatically deployed to GitHub Pages when changes are pushed to the main branch. Visit [https://illurianish.github.io/Mind-Mate](https://illurianish.github.io/Mind-Mate)
 
-1. Update `package.json`:
-   ```json
-   {
-     "homepage": "https://yourusername.github.io/mental-health-bot"
-   }
-   ```
+### Backend (Render.com)
+The backend is hosted on Render.com with automatic deployments from the main branch. The API is available at [https://mindmate-backend-f35c.onrender.com](https://mindmate-backend-f35c.onrender.com)
 
-2. Install gh-pages:
-   ```bash
-   npm install --save-dev gh-pages
-   ```
-
-3. Add deployment scripts to `package.json`:
-   ```json
-   {
-     "scripts": {
-       "predeploy": "npm run build",
-       "deploy": "gh-pages -d build"
-     }
-   }
-   ```
-
-4. Deploy:
-   ```bash
-   npm run deploy
-   ```
-
-### Backend Deployment
-
-For the backend, you'll need to deploy to a secure server that can safely store your API key. Some options include:
-
-- Heroku
-- DigitalOcean
-- AWS
-- Google Cloud Platform
+Note: The backend service may take up to 50 seconds to respond after periods of inactivity (free tier limitation).
 
 ## 🔒 Security Notes
 
