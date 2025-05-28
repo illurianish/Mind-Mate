@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: mindmate-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: FLASK_ENV
+        value: production 
