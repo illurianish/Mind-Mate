@@ -31,6 +31,9 @@ jobs:
           npm ci
       
       - name: Build
+        env:
+          PUBLIC_URL: /Mind-Mate
+          REACT_APP_API_URL: https://mindmate-backend-f35c.onrender.com
         run: |
           cd frontend
           npm run build

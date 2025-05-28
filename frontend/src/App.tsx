@@ -86,12 +86,16 @@ const App: React.FC = () => {
     },
   }), [darkMode]);
 
+  // Get base URL from environment variable or default to '/'
+  const basename = process.env.PUBLIC_URL || '/';
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
+      <Router basename={basename}>
         <Header darkMode={darkMode} onToggleDarkMode={() => setDarkMode(!darkMode)} />
         <Routes>
+          <Route path="/" element={<Chat />} />
           <Route path="*" element={<Chat />} />
         </Routes>
       </Router>
