@@ -8,16 +8,21 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-123')
     
     # Database
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///mental_health.db'
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///mental_health.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # CORS settings
     CORS_HEADERS = 'Content-Type'
-    CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002']
+    CORS_ORIGIN_WHITELIST = [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002',
+        'https://illurianish.github.io'
+    ]
     CORS_SUPPORTS_CREDENTIALS = True
     
     # OpenAI
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'sk-default-key-replace-me')  # Default key for development
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'sk-default-key-replace-me')
     
     if not OPENAI_API_KEY or OPENAI_API_KEY == 'sk-default-key-replace-me':
         print("WARNING: OpenAI API key not configured. Please set OPENAI_API_KEY in your .env file.")
