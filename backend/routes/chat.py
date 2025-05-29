@@ -12,10 +12,9 @@ load_dotenv()
 
 chat_bp = Blueprint('chat', __name__)
 
-# Initialize OpenAI client with API key from config
-client = OpenAI(
-    api_key=Config.OPENAI_API_KEY
-)
+# Initialize OpenAI client
+os.environ["OPENAI_API_KEY"] = Config.OPENAI_API_KEY
+client = OpenAI()
 
 # System message for the AI
 SYSTEM_MESSAGE = """You are MindMate, a compassionate AI companion focused on mental well-being. Format your responses in a clean, easy-to-read way:
