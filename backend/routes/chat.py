@@ -14,8 +14,7 @@ chat_bp = Blueprint('chat', __name__)
 
 # Initialize OpenAI client with API key from config
 client = OpenAI(
-    api_key=Config.OPENAI_API_KEY,
-    base_url="https://api.openai.com/v1"
+    api_key=Config.OPENAI_API_KEY
 )
 
 # System message for the AI
