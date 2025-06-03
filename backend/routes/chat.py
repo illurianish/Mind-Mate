@@ -12,9 +12,11 @@ load_dotenv()
 
 chat_bp = Blueprint('chat', __name__)
 
-# Initialize OpenAI client
-os.environ["OPENAI_API_KEY"] = Config.OPENAI_API_KEY
-client = OpenAI()
+def get_openai_client():
+    api_key = os.getenv('OPENAI_API_KEY')
+    if not api_key:
+        raise ValueError("OpenAI API key not found")
+    return OpenAI(api_key=api_key)
 
 # System message for the AI
 SYSTEM_MESSAGE = """You are MindMate, a compassionate AI companion focused on mental well-being. Format your responses in a clean, easy-to-read way:
@@ -64,10 +66,8 @@ Important:
 
 def get_response(message):
     """Get response from OpenAI API"""
-    if not Config.OPENAI_API_KEY or Config.OPENAI_API_KEY == 'sk-default-key-replace-me':
-        return "I apologize, but the service is not properly configured. Please contact the administrator."
-    
     try:
+        client = get_openai_client()
         completion = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -78,6 +78,9 @@ def get_response(message):
             temperature=0.7,
         )
         return completion.choices[0].message.content
+    except ValueError as e:
+        print(f"OpenAI configuration error: {str(e)}")
+        return "I apologize, but the service is not properly configured. Please contact the administrator."
     except Exception as e:
         print(f"OpenAI API error: {str(e)}")
         return "I apologize, but I'm having trouble processing your message right now. Could you try again in a moment?"

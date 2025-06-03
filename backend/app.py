@@ -7,19 +7,30 @@ from routes.mood import mood_bp
 from routes.journal import journal_bp
 from routes.cbt import cbt_bp
 from routes.chat import chat_bp
+import os
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     
     # Initialize extensions
-    CORS(app, resources={r"/*": {"origins": "*"}})
+    CORS(app, 
+         resources={r"/*": {
+             "origins": Config.CORS_ORIGIN_WHITELIST,
+             "methods": Config.CORS_METHODS,
+             "allow_headers": Config.CORS_ALLOW_HEADERS
+         }},
+         supports_credentials=Config.CORS_SUPPORTS_CREDENTIALS)
+    
     db.init_app(app)
     
     # Initialize models
     with app.app_context():
-        init_models()
-        db.create_all()
+        try:
+            init_models()
+            db.create_all()
+        except Exception as e:
+            app.logger.error(f"Database initialization error: {str(e)}")
     
     # Register blueprints
     app.register_blueprint(mood_bp)
@@ -31,8 +42,17 @@ def create_app():
     def health_check():
         return jsonify({"status": "healthy"}), 200
     
+    @app.errorhandler(500)
+    def handle_500(error):
+        return jsonify({"error": "Internal Server Error"}), 500
+    
+    @app.errorhandler(404)
+    def handle_404(error):
+        return jsonify({"error": "Not Found"}), 404
+    
     return app
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(host='0.0.0.0', port=5002, debug=True)
+    port = int(os.getenv('PORT', 5002))
+    app.run(host='0.0.0.0', port=port)

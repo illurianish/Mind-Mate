@@ -1,13 +1,32 @@
+from app import create_app
 import os
-import sys
+import logging
+from dotenv import load_dotenv
 
-# Add the path to your Flask application
-path = os.path.expanduser('~/mindmate-backend')
-if path not in sys.path:
-    sys.path.append(path)
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[logging.StreamHandler()]
+)
+logger = logging.getLogger(__name__)
 
-# Import your Flask application
-from app import app as application
+# Load environment variables
+load_dotenv()
 
-# This is the PythonAnywhere WSGI configuration file
-application.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-this') 
+try:
+    # Create Flask application
+    app = create_app()
+    logger.info("Application created successfully")
+except Exception as e:
+    logger.error(f"Failed to create application: {str(e)}")
+    raise
+
+if __name__ == '__main__':
+    try:
+        port = int(os.environ.get('PORT', 5002))
+        logger.info(f"Starting application on port {port}")
+        app.run(host='0.0.0.0', port=port)
+    except Exception as e:
+        logger.error(f"Failed to start application: {str(e)}")
+        raise 

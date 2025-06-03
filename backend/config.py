@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 
 class Config:
@@ -8,7 +9,9 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-123')
     
     # Database
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///mental_health.db')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///mental_health.db')
+    if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace("postgres://", "postgresql://", 1)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # CORS settings
@@ -18,7 +21,7 @@ class Config:
         'http://localhost:3001',
         'http://localhost:3002',
         'https://illurianish.github.io',
-        'https://mindmate-backend-f35c.onrender.com'
+        'https://mindmate-backend-dbad22487843.herokuapp.com'
     ]
     CORS_SUPPORTS_CREDENTIALS = True
     CORS_ALLOW_HEADERS = ['Content-Type', 'Authorization']
@@ -47,5 +50,9 @@ class Config:
     CRISIS_HOTLINE = os.getenv('CRISIS_HOTLINE', '1-800-273-8255')
     
     # JWT
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', os.getenv('SECRET_KEY', 'your-jwt-secret-key-here'))
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', SECRET_KEY)
     JWT_ACCESS_TOKEN_EXPIRES = int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 3600))  # 1 hour by default
+
+    # Flask Environment
+    FLASK_ENV = os.getenv('FLASK_ENV', 'production')
+    DEBUG = FLASK_ENV == 'development'
