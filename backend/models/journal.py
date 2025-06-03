@@ -4,7 +4,7 @@ from . import db
 
 class JournalEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     title = db.Column(db.String(200))
     content = db.Column(db.Text, nullable=False)
     mood_tag = db.Column(db.String(50))

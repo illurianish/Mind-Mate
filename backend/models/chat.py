@@ -5,7 +5,7 @@ class ChatHistory(db.Model):
     __tablename__ = 'chat_history'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, default=1)  # Default user ID
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, default=1)  # Proper foreign key to users table
     user_message = db.Column(db.Text, nullable=False)
     bot_response = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)

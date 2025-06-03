@@ -4,7 +4,7 @@ from . import db
 
 class CBTExercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     situation = db.Column(db.Text, nullable=False)
     thoughts = db.Column(db.Text, nullable=False)
     emotions = db.Column(db.Text, nullable=False)

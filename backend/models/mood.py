@@ -11,7 +11,7 @@ class Mood(db.Model):
     
     # Basic database stuff
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     
     # The actual mood data - all on a 1-5 scale to keep things simple
     mood_score = db.Column(db.Integer, nullable=False)    # How good/bad they feel overall
