@@ -10,10 +10,15 @@ from routes.chat import chat_bp
 import os
 
 def create_app():
+    """
+    Creates and configures our Flask app
+    This is where the magic happens!
+    """
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # Initialize extensions
+    # Set up CORS so our frontend can actually talk to us
+    # Without this, browsers get all grumpy about cross-origin requests
     CORS(app, 
          resources={r"/*": {
              "origins": Config.CORS_ORIGIN_WHITELIST,
@@ -22,17 +27,20 @@ def create_app():
          }},
          supports_credentials=Config.CORS_SUPPORTS_CREDENTIALS)
     
+    # Hook up our database
     db.init_app(app)
     
-    # Initialize models
+    # Get the database ready - create tables if they don't exist
     with app.app_context():
         try:
             init_models()
             db.create_all()
         except Exception as e:
-            app.logger.error(f"Database initialization error: {str(e)}")
+            # If something goes wrong, at least log it so we know what happened
+            app.logger.error(f"Whoops, database setup failed: {str(e)}")
     
-    # Register blueprints
+    # Wire up all our different route blueprints
+    # These handle mood tracking, journaling, CBT exercises, and AI chat
     app.register_blueprint(mood_bp)
     app.register_blueprint(journal_bp)
     app.register_blueprint(cbt_bp)
@@ -40,19 +48,23 @@ def create_app():
     
     @app.route('/health')
     def health_check():
+        """Simple health check for monitoring - just returns OK if we're alive"""
         return jsonify({"status": "healthy"}), 200
     
     @app.errorhandler(500)
     def handle_500(error):
+        """When things go really wrong on our end"""
         return jsonify({"error": "Internal Server Error"}), 500
     
     @app.errorhandler(404)
     def handle_404(error):
+        """When someone asks for something that doesn't exist"""
         return jsonify({"error": "Not Found"}), 404
     
     return app
 
 if __name__ == '__main__':
+    # Only runs when we start this file directly (not through gunicorn)
     app = create_app()
-    port = int(os.getenv('PORT', 5002))
-    app.run(host='0.0.0.0', port=port)
+    port = int(os.getenv('PORT', 5002))  # Use PORT from env or default to 5002
+    app.run(host='0.0.0.0', port=port, debug=True)
