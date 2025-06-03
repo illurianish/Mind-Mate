@@ -1,6 +1,5 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+# Import the shared db instance from extensions
+from extensions import db
 
 # Import models after db initialization to avoid circular imports
 def init_models():

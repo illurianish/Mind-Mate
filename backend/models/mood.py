@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.sql import func
-from . import db
+from extensions import db
 
 class Mood(db.Model):
     """

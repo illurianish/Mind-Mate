@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.sql import func
-from . import db
+from extensions import db
 
 class CBTExercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
