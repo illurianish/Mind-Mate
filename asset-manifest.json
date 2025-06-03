@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/Mind-Mate/static/css/main.ffe34ec7.css",
-    "main.js": "/Mind-Mate/static/js/main.f4e32a72.js",
+    "main.js": "/Mind-Mate/static/js/main.5421054b.js",
     "index.html": "/Mind-Mate/index.html",
     "main.ffe34ec7.css.map": "/Mind-Mate/static/css/main.ffe34ec7.css.map",
-    "main.f4e32a72.js.map": "/Mind-Mate/static/js/main.f4e32a72.js.map"
+    "main.5421054b.js.map": "/Mind-Mate/static/js/main.5421054b.js.map"
   },
   "entrypoints": [
     "static/css/main.ffe34ec7.css",
-    "static/js/main.f4e32a72.js"
+    "static/js/main.5421054b.js"
   ]
 }
