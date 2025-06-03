@@ -1,5 +1,5 @@
 from datetime import datetime
-from extensions import db
+from . import db
 
 class ChatHistory(db.Model):
     __tablename__ = 'chat_history'

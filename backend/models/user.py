@@ -14,11 +14,11 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, nullable=True)
     
-    # Define relationships with lazy loading and proper backref
-    moods = db.relationship('Mood', backref='user', lazy=True, cascade='all, delete-orphan')
-    journal_entries = db.relationship('JournalEntry', backref='user', lazy=True, cascade='all, delete-orphan')
-    cbt_exercises = db.relationship('CBTExercise', backref='user', lazy=True, cascade='all, delete-orphan')
-    chat_history = db.relationship('ChatHistory', backref='user', lazy=True, cascade='all, delete-orphan')
+    # Simplified relationships - let SQLAlchemy handle the details
+    moods = db.relationship('Mood', backref='user', lazy='dynamic')
+    journal_entries = db.relationship('JournalEntry', backref='user', lazy='dynamic')
+    cbt_exercises = db.relationship('CBTExercise', backref='user', lazy='dynamic')
+    chat_history = db.relationship('ChatHistory', backref='user', lazy='dynamic')
     
     def __repr__(self):
         return f'<User {self.email}>'
