@@ -4,8 +4,12 @@ from datetime import datetime
 from extensions import db
 from openai import OpenAI
 import os
+import logging
 from dotenv import load_dotenv
 from config import Config
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 # Load up our environment variables
 load_dotenv()
@@ -18,6 +22,7 @@ def get_openai_client():
     If we don't have an API key, we're pretty much screwed
     """
     api_key = os.getenv('OPENAI_API_KEY')
+    logger.info(f"🔑 OpenAI API key status: {'Present' if api_key else 'MISSING'}")
     if not api_key:
         raise ValueError("Whoops! No OpenAI API key found - check your .env file")
     return OpenAI(api_key=api_key)
@@ -63,6 +68,7 @@ def get_response(message):
     and hopefully get back something helpful and not weird
     """
     try:
+        logger.info(f"🤖 Getting OpenAI response for message: {message[:50]}...")
         client = get_openai_client()
         
         # Send the message to OpenAI with our custom personality
@@ -75,51 +81,73 @@ def get_response(message):
             max_tokens=400,  # Keep responses reasonable length
             temperature=0.7,  # A bit creative but not too weird
         )
-        return completion.choices[0].message.content
+        
+        response = completion.choices[0].message.content
+        logger.info(f"✅ Got OpenAI response: {response[:50]}...")
+        return response
         
     except ValueError as e:
         # This happens when OpenAI isn't configured properly
-        print(f"OpenAI setup problem: {str(e)}")
+        logger.error(f"💥 OpenAI setup problem: {str(e)}")
         return "Sorry, I'm having some technical difficulties right now. The admin needs to check the OpenAI configuration."
         
     except Exception as e:
         # Something else went wrong - network issues, API problems, etc.
-        print(f"OpenAI had a moment: {str(e)}")
+        logger.error(f"💥 OpenAI had a moment: {str(e)}")
         return "Hmm, I'm having trouble connecting to my brain right now 🤔 Could you try asking me again in a minute?"
 
-@chat_bp.route('/chat', methods=['POST'])
+@chat_bp.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
     """
     Main chat endpoint - this is where users send messages and get responses
     """
+    logger.info(f"💬 Chat endpoint hit with method: {request.method}")
+    
+    # Handle CORS preflight requests
+    if request.method == 'OPTIONS':
+        logger.info("✈️ CORS preflight request")
+        return '', 200
+    
     try:
+        logger.info("📥 Processing chat request")
+        
         # Get the JSON data from the request
         data = request.get_json()
+        logger.info(f"📊 Request data: {data}")
+        
         if not data or 'message' not in data:
+            logger.warning("⚠️ No message in request data")
             return jsonify({'error': 'Hey, you need to actually send me a message!'}), 400
 
         user_message = data['message']
+        logger.info(f"💭 User message received: {user_message}")
         
         # Get the AI response
         bot_response = get_response(user_message)
+        logger.info(f"🤖 Bot response generated: {bot_response[:50]}...")
         
         # Save this conversation to our database for later
-        # (Don't worry, we're not being creepy - just keeping track for the user)
-        chat_history = ChatHistory(
-            user_message=user_message,
-            bot_response=bot_response,
-            timestamp=datetime.utcnow()
-        )
-        db.session.add(chat_history)
-        db.session.commit()
+        try:
+            chat_history = ChatHistory(
+                user_message=user_message,
+                bot_response=bot_response,
+                timestamp=datetime.utcnow()
+            )
+            db.session.add(chat_history)
+            db.session.commit()
+            logger.info("💾 Chat saved to database successfully")
+        except Exception as db_error:
+            logger.error(f"💥 Database save failed: {str(db_error)}")
+            # Continue anyway - don't fail the request just because DB save failed
 
+        logger.info("✅ Chat request completed successfully")
         return jsonify({
             'response': bot_response
         })
 
     except Exception as e:
         # If anything goes wrong, at least give a helpful error
-        print(f"Chat broke somehow: {str(e)}")
+        logger.error(f"💥 Chat broke somehow: {str(e)}")
         return jsonify({
             'error': 'Something went wrong while processing your message. Please try again!'
         }), 500
@@ -130,11 +158,13 @@ def get_chat_history():
     Returns the last 50 chat messages - useful for showing conversation history
     """
     try:
+        logger.info("📚 Chat history requested")
         # Get the most recent 50 chat entries
         history = ChatHistory.query.order_by(ChatHistory.timestamp.desc()).limit(50).all()
+        logger.info(f"📚 Found {len(history)} chat entries")
         return jsonify({
             'history': [entry.to_dict() for entry in history]
         })
     except Exception as e:
-        print(f"Couldn't fetch chat history: {str(e)}")
+        logger.error(f"💥 Couldn't fetch chat history: {str(e)}")
         return jsonify({'error': 'Unable to load chat history right now'}), 500

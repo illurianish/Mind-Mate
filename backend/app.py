@@ -1,13 +1,18 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from models import init_models
 from config import Config
 from extensions import db
-from routes.mood import mood_bp
-from routes.journal import journal_bp
-from routes.cbt import cbt_bp
 from routes.chat import chat_bp
 import os
+import logging
+
+# Set up proper logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 def create_default_user():
     """
@@ -31,30 +36,24 @@ def create_default_user():
             default_user.id = 1
             db.session.add(default_user)
             db.session.commit()
-            print("✅ Created default user (ID=1) for the app")
+            logger.info("✅ Created default user (ID=1) for the app")
         else:
-            print("✅ Default user already exists")
+            logger.info("✅ Default user already exists")
             
     except Exception as e:
-        print(f"⚠️ Could not create default user: {str(e)}")
+        logger.error(f"⚠️ Could not create default user: {str(e)}")
 
 def create_app():
     """
-    Creates and configures our Flask app
-    This is where the magic happens!
+    Creates and configures our Flask app - SIMPLIFIED for chat only
     """
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # Set up CORS so our frontend can actually talk to us
-    # Without this, browsers get all grumpy about cross-origin requests
+    # More permissive CORS for debugging
     CORS(app, 
-         resources={r"/*": {
-             "origins": Config.CORS_ORIGIN_WHITELIST,
-             "methods": Config.CORS_METHODS,
-             "allow_headers": Config.CORS_ALLOW_HEADERS
-         }},
-         supports_credentials=Config.CORS_SUPPORTS_CREDENTIALS)
+         resources={r"/*": {"origins": "*"}},  # Allow all origins for now
+         supports_credentials=False)
     
     # Hook up our database
     db.init_app(app)
@@ -66,30 +65,41 @@ def create_app():
             db.create_all()
             # Create default user for production
             create_default_user()
+            logger.info("🎯 Database setup completed successfully")
         except Exception as e:
-            # If something goes wrong, at least log it so we know what happened
-            app.logger.error(f"Whoops, database setup failed: {str(e)}")
+            logger.error(f"💥 Database setup failed: {str(e)}")
     
-    # Wire up all our different route blueprints
-    # These handle mood tracking, journaling, CBT exercises, and AI chat
-    app.register_blueprint(mood_bp)
-    app.register_blueprint(journal_bp)
-    app.register_blueprint(cbt_bp)
+    # Only register chat blueprint - removed all other features
     app.register_blueprint(chat_bp)
     
     @app.route('/health')
     def health_check():
-        """Simple health check for monitoring - just returns OK if we're alive"""
-        return jsonify({"status": "healthy"}), 200
+        """Simple health check for monitoring"""
+        logger.info("🩺 Health check requested")
+        return jsonify({"status": "healthy", "message": "MindMate backend is running!"}), 200
+    
+    @app.route('/')
+    def home():
+        """Root endpoint"""
+        return jsonify({"message": "MindMate API - Chat only", "status": "online"}), 200
+    
+    @app.before_request
+    def log_request_info():
+        """Log all incoming requests for debugging"""
+        logger.info(f"🔍 {request.method} {request.url} from {request.remote_addr}")
+        if request.method == 'POST' and request.json:
+            logger.info(f"📝 Request data: {request.json}")
     
     @app.errorhandler(500)
     def handle_500(error):
         """When things go really wrong on our end"""
+        logger.error(f"💥 500 Error: {str(error)}")
         return jsonify({"error": "Internal Server Error"}), 500
     
     @app.errorhandler(404)
     def handle_404(error):
         """When someone asks for something that doesn't exist"""
+        logger.warning(f"🔍 404 Error: {request.url}")
         return jsonify({"error": "Not Found"}), 404
     
     return app
@@ -97,5 +107,5 @@ def create_app():
 if __name__ == '__main__':
     # Only runs when we start this file directly (not through gunicorn)
     app = create_app()
-    port = int(os.getenv('PORT', 5002))  # Use PORT from env or default to 5002
+    port = int(os.getenv('PORT', 5002))
     app.run(host='0.0.0.0', port=port, debug=True)
