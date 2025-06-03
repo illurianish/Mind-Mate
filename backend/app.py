@@ -9,6 +9,35 @@ from routes.cbt import cbt_bp
 from routes.chat import chat_bp
 import os
 
+def create_default_user():
+    """
+    Creates a default user (ID=1) for the app if it doesn't exist
+    This is needed because the whole app is hardcoded to use user_id=1
+    """
+    try:
+        from models.user import User
+        
+        # Check if default user already exists
+        default_user = User.query.filter_by(id=1).first()
+        
+        if not default_user:
+            # Create a default user for the mental health app
+            default_user = User(
+                email='default@mindmate.app',
+                name='MindMate User',
+                password='placeholder'  # Not used since no real auth
+            )
+            # Force the ID to be 1
+            default_user.id = 1
+            db.session.add(default_user)
+            db.session.commit()
+            print("✅ Created default user (ID=1) for the app")
+        else:
+            print("✅ Default user already exists")
+            
+    except Exception as e:
+        print(f"⚠️ Could not create default user: {str(e)}")
+
 def create_app():
     """
     Creates and configures our Flask app
@@ -35,6 +64,8 @@ def create_app():
         try:
             init_models()
             db.create_all()
+            # Create default user for production
+            create_default_user()
         except Exception as e:
             # If something goes wrong, at least log it so we know what happened
             app.logger.error(f"Whoops, database setup failed: {str(e)}")

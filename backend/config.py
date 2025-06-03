@@ -31,8 +31,10 @@ class Config:
         'http://localhost:3000',    # Local React dev server
         'http://localhost:3001',    # Backup local port
         'http://localhost:3002',    # Another backup port
-        'https://illurianish.github.io',  # Our GitHub Pages frontend
-        'https://mindmate-backend-dbad22487843.herokuapp.com'  # Old Heroku URL
+        'http://localhost:5002',    # Local Flask dev server
+        'https://illurianish.github.io',  # GitHub Pages root
+        'https://illurianish.github.io/Mind-Mate',  # Our actual GitHub Pages frontend URL
+        'https://mind-mate-fe88.onrender.com'  # Our Render backend URL (for health checks)
     ]
     CORS_SUPPORTS_CREDENTIALS = True
     CORS_ALLOW_HEADERS = ['Content-Type', 'Authorization']
